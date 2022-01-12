@@ -34,8 +34,11 @@ def generator(lines, batch_size=32):
                 filename_right = source_path_right.split('/')[-1]
 
                 img_center = cv2.imread('data/IMG/' + filename_center)
+                img_center = cv2.cvtColor(img_center, cv2.COLOR_BGR2RGB)
                 img_left = cv2.imread('data/IMG/' + filename_left)
+                img_left = cv2.cvtColor(img_left, cv2.COLOR_BGR2RGB)
                 img_right = cv2.imread('data/IMG/' + filename_right)
+                img_right = cv2.cvtColor(img_right, cv2.COLOR_BGR2RGB)
 
                 images.append(img_center)
                 images.append(img_left)
@@ -72,7 +75,7 @@ train_generator = generator(train_lines, batch_size=batch_size)
 validation_generator = generator(validation_lines, batch_size=batch_size)
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda, Cropping2D
+from keras.layers import Flatten, Dense, Lambda, Cropping2D, Dropout
 from keras.layers.convolutional import Conv2D
 
 model = Sequential()
@@ -90,10 +93,15 @@ model.add(Conv2D(filters=64, kernel_size=3, strides=(3,3), activation='relu', pa
 #Convolutional feature map 24@
 model.add(Conv2D(filters=64, kernel_size=3, strides=(3,3), activation='relu', padding= 'same'))
 model.add(Flatten())
+model.add(Dropout(0.5))
 model.add(Dense(1164))
+model.add(Dropout(0.5))
 model.add(Dense(100))
+model.add(Dropout(0.5))
 model.add(Dense(50))
+model.add(Dropout(0.5))
 model.add(Dense(10))
+model.add(Dropout(0.5))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
@@ -101,7 +109,7 @@ model.compile(loss='mse', optimizer='adam')
 import math
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
-save_path = 'model.h5'
+save_path = 'model_generator.h5'
 
 checkpoint = ModelCheckpoint(filepath=save_path, monitor='val_loss', save_best_only=True)
 stopper = EarlyStopping(monitor='val_loss', min_delta=0.0003, patience=2)

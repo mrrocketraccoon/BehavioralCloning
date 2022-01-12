@@ -4,7 +4,7 @@ import numpy as np
 
 lines = []
 
-with open('new/driving_log.csv') as csvfile:
+with open('data/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
         lines.append(line)
@@ -19,9 +19,12 @@ for line in lines[1:]:
     source_path_right = line[2]
     filename_right = source_path_right.split('/')[-1]
     
-    img_center = cv2.imread('new/IMG/' + filename_center)
-    img_left = cv2.imread('new/IMG/' + filename_left)
-    img_right = cv2.imread('new/IMG/' + filename_right)
+    img_center = cv2.imread('data/IMG/' + filename_center)
+    img_center = cv2.cvtColor(img_center, cv2.COLOR_BGR2RGB)
+    img_left = cv2.imread('data/IMG/' + filename_left)
+    img_left = cv2.cvtColor(img_left, cv2.COLOR_BGR2RGB)
+    img_right = cv2.imread('data/IMG/' + filename_right)
+    img_right = cv2.cvtColor(img_right, cv2.COLOR_BGR2RGB)
     
     images.append(img_center)
     images.append(img_left)
@@ -67,17 +70,22 @@ model.add(Conv2D(filters=64, kernel_size=3, strides=(3,3), activation='relu', pa
 #Convolutional feature map 24@
 model.add(Conv2D(filters=64, kernel_size=3, strides=(3,3), activation='relu', padding= 'same'))
 model.add(Flatten())
+model.add(Dropout(0.5))
 model.add(Dense(1164))
+model.add(Dropout(0.5))
 model.add(Dense(100))
+model.add(Dropout(0.5))
 model.add(Dense(50))
+model.add(Dropout(0.5))
 model.add(Dense(10))
+model.add(Dropout(0.5))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
-save_path = 'double_data.h5'
+save_path = 'dropout_no_generator.h5'
 
 my_callbacks = [
     ModelCheckpoint(filepath=save_path, monitor='val_loss', save_best_only=True),
