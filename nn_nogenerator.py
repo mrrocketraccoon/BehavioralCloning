@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 lines = []
-
+#read the csv file
 with open('data/driving_log.csv') as csvfile:
     reader = csv.reader(csvfile)
     for line in reader:
@@ -18,7 +18,7 @@ for line in lines[1:]:
     filename_left = source_path_left.split('/')[-1]
     source_path_right = line[2]
     filename_right = source_path_right.split('/')[-1]
-    
+    #read the images and convert them to RGB format
     img_center = cv2.imread('data/IMG/' + filename_center)
     img_center = cv2.cvtColor(img_center, cv2.COLOR_BGR2RGB)
     img_left = cv2.imread('data/IMG/' + filename_left)
